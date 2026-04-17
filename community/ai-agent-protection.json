@@ -21,7 +21,7 @@
           "field": "basic:signature",
           "operator": "exists"
         },
-        "flowbits": {
+        "flowstate": {
           "increment": [
             "transaction_count"
           ],
@@ -47,7 +47,7 @@
       "rule": {
         "action": "block",
         "conditions": {
-          "field": "flowbit:transaction_count",
+          "field": "flowstate:transaction_count",
           "operator": "greater_than_or_equal",
           "value": 10
         },
@@ -75,7 +75,7 @@
           "operator": "equals",
           "value": true
         },
-        "flowbits": {
+        "flowstate": {
           "increment": [
             "account_creation_count"
           ],
@@ -108,7 +108,7 @@
               "value": true
             },
             {
-              "field": "flowbit:account_creation_count",
+              "field": "flowstate:account_creation_count",
               "operator": "greater_than_or_equal",
               "value": 5
             }
@@ -135,11 +135,11 @@
       "rule": {
         "action": "alert",
         "conditions": {
-          "field": "flowbit:blocked_transaction_count",
+          "field": "flowstate:blocked_transaction_count",
           "operator": "greater_than_or_equal",
           "value": 3
         },
-        "flowbits": {
+        "flowstate": {
           "ttl_seconds": 3600
         },
         "message": "⚠️ AI Agent: Repeatedly attempting blocked transactions (3+ in 1h) - investigate for compromise or misconfiguration"
@@ -171,13 +171,13 @@
               "value": true
             },
             {
-              "field": "flowbit:transfers_to:{system:sol_recipients[0]}",
+              "field": "flowstate:transfers_to:{system:sol_recipients[0]}",
               "operator": "greater_than",
               "value": 3
             }
           ]
         },
-        "flowbits": {
+        "flowstate": {
           "scope": "perwallet",
           "increment": [
             "transfers_to:{system:sol_recipients[0]}"
@@ -223,13 +223,13 @@
               ]
             },
             {
-              "field": "flowbit:program_interaction:{basic:program_ids[0]}",
+              "field": "flowstate:program_interaction:{basic:program_ids[0]}",
               "operator": "greater_than",
               "value": 2
             }
           ]
         },
-        "flowbits": {
+        "flowstate": {
           "scope": "perwallet",
           "increment": [
             "program_interaction:{basic:program_ids[0]}"

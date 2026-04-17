@@ -82,14 +82,14 @@ def validate_simple_condition(cond: dict, *, path: str) -> None:
         die(f"{path}: unknown operator {op!r}; expected one of {sorted(VALID_OPERATORS)}")
 
 
-def validate_flowbit_condition(cond: dict, *, path: str) -> None:
-    allowed = {"flowbit", "within_seconds", "count_operator", "count_value"}
+def validate_flowstate_condition(cond: dict, *, path: str) -> None:
+    allowed = {"flowstate", "flowbit", "within_seconds", "count_operator", "count_value"}
     extra = set(cond) - allowed
     if extra:
-        die(f"{path}: unexpected keys in flowbit condition: {sorted(extra)}")
-    fb = cond.get("flowbit")
+        die(f"{path}: unexpected keys in flowstate condition: {sorted(extra)}")
+    fb = cond.get("flowstate") or cond.get("flowbit")
     if not isinstance(fb, str) or not fb.strip():
-        die(f"{path}: flowbit condition needs non-empty string 'flowbit'")
+        die(f"{path}: flowstate condition needs non-empty string 'flowstate'")
     ws = cond.get("within_seconds")
     if ws is not None and (not isinstance(ws, int) or ws < 0):
         die(f"{path}: within_seconds must be a non-negative int or null")
@@ -107,25 +107,25 @@ def validate_condition(cond: Any, *, path: str, depth: int) -> None:
     if not isinstance(cond, dict):
         die(f"{path}: condition must be a JSON object")
 
-    is_flowbit = "flowbit" in cond
+    is_flowstate = "flowstate" in cond or "flowbit" in cond
     compound_keys = ("all", "any", "not")
     is_compound = any(k in cond for k in compound_keys)
     is_simple = "field" in cond and "operator" in cond
 
-    n_modes = sum([is_flowbit, is_compound, is_simple])
+    n_modes = sum([is_flowstate, is_compound, is_simple])
     if n_modes > 1:
         die(
             f"{path}: condition must be exactly one of "
-            f"simple (field+operator), compound (all/any/not), or flowbit (flowbit); got mixed keys"
+            f"simple (field+operator), compound (all/any/not), or flowstate (flowstate); got mixed keys"
         )
     if n_modes == 0:
         die(
             f"{path}: condition must be simple (field+operator), compound (all/any/not), "
-            f"or flowbit (flowbit)"
+            f"or flowstate (flowstate)"
         )
 
-    if is_flowbit:
-        validate_flowbit_condition(cond, path=path)
+    if is_flowstate:
+        validate_flowstate_condition(cond, path=path)
         return
     if is_simple:
         validate_simple_condition(cond, path=path)
@@ -154,11 +154,11 @@ def validate_condition(cond: Any, *, path: str, depth: int) -> None:
         die(f"{path}: compound condition has no all, any, or not")
 
 
-def validate_flowbits_actions(obj: dict, *, path: str) -> None:
+def validate_flowstate_actions(obj: dict, *, path: str) -> None:
     allowed = {"scope", "set", "unset", "increment", "ttl_seconds"}
     extra = set(obj) - allowed
     if extra:
-        die(f"{path}: unexpected keys in flowbits: {sorted(extra)}")
+        die(f"{path}: unexpected keys in flowstate: {sorted(extra)}")
     sc = obj.get("scope", "perwallet")
     if isinstance(sc, str):
         sc_l = sc.lower()
@@ -217,7 +217,7 @@ def validate_rule(rule: dict, *, path: str) -> None:
     r = rule["rule"]
     if not isinstance(r, dict):
         die(f"{path}: rule.rule must be object: id={rid!r}")
-    rule_allowed = {"action", "conditions", "message", "flowbits"}
+    rule_allowed = {"action", "conditions", "message", "flowstate", "flowbits"}
     extra_r = set(r) - rule_allowed
     if extra_r:
         die(f"{path}: unexpected keys in rule.rule: {sorted(extra_r)}: id={rid!r}")
@@ -237,10 +237,12 @@ def validate_rule(rule: dict, *, path: str) -> None:
 
     validate_condition(r["conditions"], path=f"{path}.conditions", depth=0)
 
-    if "flowbits" in r and r["flowbits"] is not None:
-        if not isinstance(r["flowbits"], dict):
-            die(f"{path}: rule.rule.flowbits must be an object or omitted: id={rid!r}")
-        validate_flowbits_actions(r["flowbits"], path=f"{path}.flowbits")
+    # Support both flowstate (new) and flowbits (legacy) for backward compatibility
+    flowstate_block = r.get("flowstate") or r.get("flowbits")
+    if flowstate_block is not None:
+        if not isinstance(flowstate_block, dict):
+            die(f"{path}: rule.rule.flowstate must be an object or omitted: id={rid!r}")
+        validate_flowstate_actions(flowstate_block, path=f"{path}.flowstate")
 
 
 def validate_feed(obj: dict, *, path: Path) -> None:

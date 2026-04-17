@@ -8,15 +8,17 @@ Ready-to-use **JSON rule feeds** for [Parapet](https://github.com/securecheckio/
 
 ## Pick a feed (one URL per category)
 
-| URL path (under `community/`) | When to use it |
-| --- | --- |
-| `core-protection.json` | No third-party API keys; pattern rules only. |
-| `helius-protection.json` | You have a Helius API key. |
-| `jupiter-protection.json` | You have a Jupiter API key. |
-| `rugcheck-protection.json` | You have a Rugcheck API key. |
-| `ai-agent-protection.json` | AI agents / flowbits-style patterns. |
-| `advanced-patterns.json` | CPI depth + instruction-padding patterns. |
-| `trading-bot-alerts.json` | Alert-first patterns for trading-style traffic. |
+
+| URL path (under `community/`) | When to use it                                  |
+| ----------------------------- | ----------------------------------------------- |
+| `core-protection.json`        | No third-party API keys; pattern rules only.    |
+| `helius-protection.json`      | You have a Helius API key.                      |
+| `jupiter-protection.json`     | You have a Jupiter API key.                     |
+| `rugcheck-protection.json`    | You have a Rugcheck API key.                    |
+| `ai-agent-protection.json`    | AI agents / flowstate-style patterns.            |
+| `advanced-patterns.json`      | CPI depth + instruction-padding patterns.       |
+| `trading-bot-alerts.json`     | Alert-first patterns for trading-style traffic. |
+
 
 There is **no** single “download everything” URL on purpose: you choose which categories to load. List each one as its own `[[rule_feeds.sources]]` entry.
 
@@ -53,7 +55,7 @@ Add more `[[rule_feeds.sources]]` blocks for other categories if you need them.
 
 - **Fork / clone** this repo if you want to edit JSON yourself. Host the changed files over **HTTPS** (fork raw URL, internal static host, etc.) and point `url` at your copy.
 - **Several URLs at once** is normal: community feeds + your own JSON on another domain.
-- **Same rule in two feeds:** Parapet merges on the rule’s **`id` string**. The feed with the **lower `priority` number wins** (e.g. `0` beats `5`). Put your overrides in a small-priority feed without changing upstream.
+- **Same rule in two feeds:** Parapet merges on the rule’s `**id` string**. The feed with the **lower `priority` number wins** (e.g. `0` beats `5`). Put your overrides in a small-priority feed without changing upstream.
 
 ---
 
@@ -65,8 +67,8 @@ Example JSON for **your** hosted override feeds. Not published as Parapet “com
 
 ## For contributors (rule JSON in `community/`)
 
-- **`id`** — Must match `community-<slug>` (see validator). That single string is Parapet’s merge key and is enough to mark “from this community pack” and avoid colliding with unrelated rules elsewhere.
-- **`metadata`** — Optional. Use it for severity, notes, tuning hints, etc. CI only checks shape when `metadata` is present; it does not require extra numeric identifiers beyond `id`.
+- `**id`** — Must match `community-<slug>` (see validator). That single string is Parapet’s merge key and is enough to mark “from this community pack” and avoid colliding with unrelated rules elsewhere.
+- `**metadata**` — Optional. Use it for severity, notes, tuning hints, etc. CI only checks shape when `metadata` is present; it does not require extra numeric identifiers beyond `id`.
 - **Uniqueness** — Each `id` must appear in **at most one** file under `community/` (enforced in CI).
 
 **Condition `field` values** (e.g. `token_instructions:…`) describe what to read from analyzers; they are not the same thing as rule `id`.
