@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: Jupiter Integration",
+  "description": "Token safety signals from Jupiter token analyzer.",
+  "published_at": "2026-04-17T01:15:15Z",
+  "source": "parapet-community",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-block-suspicious-tokens",
+      "name": "Block Suspicious Tokens",
+      "description": "Jupiter-verified scam/rug pull tokens",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "jupiter",
+        "rug-pull"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "jupiter:is_sus",
+          "operator": "equals",
+          "value": true
+        },
+        "message": "🚨 BLOCKED: Suspicious token (Jupiter verified)"
+      },
+      "metadata": {
+        "severity": "critical",
+        "false_positive_rate": 0.01,
+        "weight": 100,
+        "requires_api_keys": [
+          "JUPITER_API_KEY"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-block-active-rug-pulls",
+      "name": "Block Active Rug Pulls",
+      "description": "Detects liquidity drains + holder exodus in real-time",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "jupiter",
+        "rug-pull"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "jupiter:has_critical_risk",
+          "operator": "equals",
+          "value": true
+        },
+        "message": "🚨 BLOCKED: Active rug pull detected"
+      },
+      "metadata": {
+        "severity": "critical",
+        "false_positive_rate": 0.02,
+        "weight": 100,
+        "requires_api_keys": [
+          "JUPITER_API_KEY"
+        ]
+      }
+    }
+  ],
+  "deprecated_rule_ids": [],
+  "requires_api_keys": [
+    "JUPITER_API_KEY"
+  ]
+}

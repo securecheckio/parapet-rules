@@ -1,0 +1,114 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: Helius Integration",
+  "description": "Reputation and transfer-velocity signals from Helius analyzers.",
+  "published_at": "2026-04-17T01:15:15Z",
+  "source": "parapet-community",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-block-malicious-addresses",
+      "name": "Block Known Malicious Addresses",
+      "description": "Blocks scammers, hackers, exploiters verified by Helius",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "helius",
+        "identity"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "helius_identity:other_classifications",
+          "operator": "in",
+          "value": [
+            "Scammer",
+            "Rugger",
+            "Hacker",
+            "Exploiter, Hackers & Scams"
+          ]
+        },
+        "message": "🚨 BLOCKED: Known malicious address"
+      },
+      "metadata": {
+        "severity": "critical",
+        "false_positive_rate": 0.001,
+        "weight": 100,
+        "requires_api_keys": [
+          "HELIUS_API_KEY"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-block-active-drain",
+      "name": "Block Active Wallet Drain",
+      "description": "Rapid outgoing transfers (>10 tx/hour to same address)",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "helius",
+        "drain"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "helius_transfer:is_high_velocity",
+          "operator": "equals",
+          "value": true
+        },
+        "message": "🚨 BLOCKED: Active drain attack detected"
+      },
+      "metadata": {
+        "severity": "critical",
+        "false_positive_rate": 0.01,
+        "weight": 100,
+        "requires_api_keys": [
+          "HELIUS_API_KEY"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-block-compromised-wallet",
+      "name": "Block Compromised Wallet Pattern",
+      "description": "High velocity + high concentration = compromised",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "helius",
+        "compromised"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "helius_transfer:is_high_velocity",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "helius_transfer:counterparty_concentration",
+              "operator": "greater_than",
+              "value": 0.7
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: Compromised wallet/agent pattern"
+      },
+      "metadata": {
+        "severity": "critical",
+        "false_positive_rate": 0.02,
+        "weight": 100,
+        "requires_api_keys": [
+          "HELIUS_API_KEY"
+        ]
+      }
+    }
+  ],
+  "deprecated_rule_ids": [],
+  "requires_api_keys": [
+    "HELIUS_API_KEY"
+  ]
+}

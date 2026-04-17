@@ -1,0 +1,113 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: Trading Bot Alerts",
+  "description": "Alert-first patterns useful for automated trading contexts (excludes proprietary program blocklists).",
+  "published_at": "2026-04-17T01:15:15Z",
+  "source": "parapet-community",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-alert-unlimited-delegation",
+      "name": "Unlimited Delegation Alert",
+      "description": "Detects unlimited token approvals (u64::MAX) which can indicate drain attacks",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "critical",
+        "delegation"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "field": "token_instructions:unlimited_approve_count",
+          "operator": "greater_than",
+          "value": 0
+        },
+        "message": "⚠️ Unlimited token delegation detected (u64::MAX)"
+      },
+      "metadata": {
+        "severity": "critical",
+        "false_positive_rate": 0.001,
+        "weight": 40
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-alert-large-sol-transfer",
+      "name": "Large SOL Transfer Alert",
+      "description": "Alerts when transaction transfers >5 SOL",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "risk",
+        "sol-transfer"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "field": "system:max_sol_transfer",
+          "operator": "greater_than",
+          "value": 5000000000
+        },
+        "message": "⚠️ Large SOL transfer detected (>5 SOL)"
+      },
+      "metadata": {
+        "severity": "high",
+        "weight": 50
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-alert-multiple-approvals",
+      "name": "Multiple Delegations Alert",
+      "description": "Warns when transaction has 3+ token approvals",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "delegation"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "field": "token_instructions:approve_count",
+          "operator": "greater_than_or_equal",
+          "value": 3
+        },
+        "message": "⚠️ Multiple token approvals detected (3+)"
+      },
+      "metadata": {
+        "severity": "high",
+        "weight": 30
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-alert-complex-transaction",
+      "name": "Complex Transaction Alert",
+      "description": "Alerts on transactions with high complexity score",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "complexity"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "field": "complexity:is_complex_transaction",
+          "operator": "equals",
+          "value": true
+        },
+        "message": "⚠️ Complex transaction detected - review carefully"
+      },
+      "metadata": {
+        "severity": "medium",
+        "weight": 25
+      }
+    }
+  ],
+  "deprecated_rule_ids": []
+}

@@ -1,0 +1,373 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: Advanced Pattern Detection",
+  "description": "Deep CPI scanning and instruction padding anomaly detection.",
+  "published_at": "2026-04-17T01:15:15Z",
+  "source": "parapet-community",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-deep-cpi-alert",
+      "name": "Deep CPI Chain Alert",
+      "description": "Alerts when transaction has unusually deep cross-program invocation chains (>5 levels)",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "cpi",
+        "deep-scan"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "inner_instruction:has_deep_cpis",
+              "operator": "equals",
+              "value": true
+            }
+          ]
+        },
+        "message": "Transaction contains unusually deep CPI chain (>5 levels)"
+      },
+      "metadata": {
+        "severity": "medium",
+        "weight": 30,
+        "comment": "Deep CPI chains can hide malicious behavior in nested program calls"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-unknown-inner-programs",
+      "name": "Unknown Programs in CPIs",
+      "description": "Alerts when transaction invokes unknown programs via CPIs (not system/token programs)",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "cpi",
+        "deep-scan",
+        "unknown"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "inner_instruction:has_unknown_inner_programs",
+              "operator": "equals",
+              "value": true
+            }
+          ]
+        },
+        "message": "Transaction calls unknown programs via CPIs"
+      },
+      "metadata": {
+        "severity": "medium",
+        "weight": 35,
+        "comment": "Unknown programs in CPIs should be reviewed - could be malicious contracts"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-high-cpi-risk",
+      "name": "High CPI Risk Score",
+      "description": "Blocks transactions with very high CPI risk scores (deep chains + unknown programs)",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "cpi",
+        "deep-scan",
+        "high-risk"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "inner_instruction:cpi_risk_score",
+              "operator": "greater_than",
+              "value": 10
+            }
+          ]
+        },
+        "message": "Transaction has very high CPI risk score - likely malicious"
+      },
+      "metadata": {
+        "severity": "critical",
+        "weight": 80,
+        "comment": "Combination of deep CPIs and unknown programs indicates sophisticated attack"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-multiple-unknown-cpis",
+      "name": "Multiple Unknown Programs in CPIs",
+      "description": "Blocks when transaction invokes 3+ unknown programs via CPIs",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "security",
+        "cpi",
+        "deep-scan",
+        "unknown"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "inner_instruction:unknown_program_count",
+              "operator": "greater_than",
+              "value": 2
+            }
+          ]
+        },
+        "message": "Transaction invokes multiple unknown programs via CPIs"
+      },
+      "metadata": {
+        "severity": "high",
+        "weight": 60,
+        "comment": "Multiple unknown programs in CPIs is a red flag for complex attacks"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-block-extreme-cpi-depth",
+      "name": "Block Extreme CPI Depth",
+      "description": "Block transactions with extremely deep CPI chains (depth score >80)",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "cpi",
+        "depth"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "inner_instruction:cpi_depth_score",
+          "operator": "greater_than",
+          "value": 80
+        },
+        "message": "🚨 BLOCKED: Extreme CPI depth detected - likely obfuscation attempt"
+      },
+      "metadata": {
+        "severity": "critical",
+        "weight": 70
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-alert-moderate-cpi-depth",
+      "name": "Alert on Moderate CPI Depth",
+      "description": "Warn on transactions with moderately deep CPI chains (depth score 50-80)",
+      "author": "securecheck",
+      "enabled": true,
+      "tags": [
+        "warning",
+        "cpi",
+        "depth"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "inner_instruction:cpi_depth_score",
+              "operator": "greater_than",
+              "value": 50
+            },
+            {
+              "field": "inner_instruction:cpi_depth_score",
+              "operator": "less_than_or_equal",
+              "value": 80
+            }
+          ]
+        },
+        "message": "⚠️ Moderate CPI depth detected - review transaction carefully"
+      },
+      "metadata": {
+        "severity": "medium",
+        "weight": 25
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-padding-critical-excessive",
+      "name": "Critical: Excessive Instruction Padding",
+      "description": "Blocks when instruction padding is excessive (high-confidence padding attack pattern).",
+      "enabled": true,
+      "tags": [
+        "instruction-padding",
+        "critical",
+        "padding"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "padding:has_suspicious_padding",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "padding:max_padding_bytes",
+              "operator": "greater_than",
+              "value": 512
+            }
+          ]
+        },
+        "message": "Transaction blocked: Instruction contains excessive padding ({{padding:max_padding_bytes}} bytes). This pattern is commonly used in padding attacks to bypass security checks."
+      },
+      "metadata": {
+        "category": "instruction_padding_attack",
+        "severity": "critical",
+        "attack_vector": "instruction_data_manipulation"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-padding-high-repeated-pattern",
+      "name": "High: Repeated Padding Pattern Detected",
+      "description": "Blocks repeated padding byte patterns commonly used for obfuscation.",
+      "enabled": true,
+      "tags": [
+        "instruction-padding",
+        "high",
+        "padding"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "padding:has_suspicious_padding",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "padding:has_repeated_padding",
+              "operator": "equals",
+              "value": true
+            }
+          ]
+        },
+        "message": "Transaction blocked: Instruction contains repeated padding pattern (e.g., 0x00 or 0xFF bytes). This suggests a malicious attempt to hide or obfuscate instruction data."
+      },
+      "metadata": {
+        "category": "instruction_padding_attack",
+        "severity": "high",
+        "attack_vector": "data_obfuscation"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-padding-high-ratio",
+      "name": "High: Suspicious Padding Ratio",
+      "description": "Blocks when padding ratio is suspiciously high relative to expected instruction size.",
+      "enabled": true,
+      "tags": [
+        "instruction-padding",
+        "high",
+        "padding"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "padding:has_suspicious_padding",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "padding:max_padding_ratio",
+              "operator": "greater_than",
+              "value": 10.0
+            }
+          ]
+        },
+        "message": "Transaction blocked: Instruction padding ratio ({{padding:max_padding_ratio}}x) exceeds safe threshold. The instruction data is significantly larger than expected for its type."
+      },
+      "metadata": {
+        "category": "instruction_padding_attack",
+        "severity": "high",
+        "attack_vector": "size_anomaly"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-padding-medium-multiple-suspicious",
+      "name": "Medium: Multiple Instructions with Suspicious Padding",
+      "description": "Alerts when multiple instructions contain suspicious padding.",
+      "enabled": true,
+      "tags": [
+        "instruction-padding",
+        "medium",
+        "padding"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "padding:suspicious_instruction_count",
+              "operator": "greater_than",
+              "value": 1
+            }
+          ]
+        },
+        "message": "Warning: Transaction contains {{padding:suspicious_instruction_count}} instructions with suspicious padding. Review the transaction details carefully before proceeding."
+      },
+      "metadata": {
+        "category": "instruction_padding_attack",
+        "severity": "medium",
+        "attack_vector": "multiple_anomalies"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-padding-low-single-moderate",
+      "name": "Low: Single Instruction with Moderate Padding",
+      "description": "Advisory alert for moderate padding that may be legitimate but warrants review.",
+      "enabled": true,
+      "tags": [
+        "instruction-padding",
+        "low",
+        "padding"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "padding:has_suspicious_padding",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "padding:max_padding_bytes",
+              "operator": "greater_than",
+              "value": 256
+            },
+            {
+              "field": "padding:max_padding_bytes",
+              "operator": "less_than_or_equal",
+              "value": 512
+            }
+          ]
+        },
+        "message": "Advisory: Instruction contains moderate padding ({{padding:max_padding_bytes}} bytes). This may be legitimate (e.g., Token-2022 extensions) but warrants review."
+      },
+      "metadata": {
+        "category": "instruction_padding_attack",
+        "severity": "low",
+        "attack_vector": "size_anomaly"
+      }
+    }
+  ],
+  "deprecated_rule_ids": []
+}

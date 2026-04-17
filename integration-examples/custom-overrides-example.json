@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "published_at": "2026-04-15T00:00:00Z",
+  "source": "custom-overrides",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "custom-sol-limit",
+      "name": "Block My SOL Limit",
+      "description": "Custom 50 SOL threshold - overrides community default",
+      "enabled": true,
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "system:max_sol_transfer",
+          "operator": "greater_than",
+          "value": 50000000000
+        },
+        "message": "🚨 BLOCKED: Exceeds 50 SOL limit"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "allow-my-dex",
+      "name": "Allow My Trusted DEX",
+      "description": "Override to allow a specific program I trust",
+      "enabled": true,
+      "rule": {
+        "action": "allow",
+        "conditions": {
+          "field": "program_id",
+          "operator": "equals",
+          "value": "MyTrustedProgram1111111111111111111111111"
+        },
+        "message": "✅ Trusted program allowed"
+      }
+    }
+  ]
+}

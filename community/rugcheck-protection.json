@@ -1,0 +1,144 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: Rugcheck Integration",
+  "description": "Token safety signals from Rugcheck analyzer.",
+  "published_at": "2026-04-17T01:15:15Z",
+  "source": "parapet-community",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-block-confirmed-rugpulls",
+      "name": "Block Confirmed Rugpulls",
+      "description": "Block transactions with tokens that are confirmed rugpulls by Rugcheck",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "rugcheck",
+        "rugpull"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "rugcheck:is_rugged",
+          "operator": "equals",
+          "value": true
+        },
+        "message": "🚨 BLOCKED: Token confirmed as rug pull by Rugcheck"
+      },
+      "metadata": {
+        "severity": "critical",
+        "weight": 100,
+        "false_positive_rate": 0.001,
+        "requires_api_keys": [
+          "RUGCHECK_API_KEY"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-block-danger-level-tokens",
+      "name": "Block Danger-Level Tokens",
+      "description": "Block tokens with danger-level risk indicators from Rugcheck",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "rugcheck",
+        "danger"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "rugcheck:danger_count",
+          "operator": "greater_than",
+          "value": 0
+        },
+        "message": "🚨 BLOCKED: Token has danger-level risks (Rugcheck)"
+      },
+      "metadata": {
+        "severity": "critical",
+        "weight": 85,
+        "requires_api_keys": [
+          "RUGCHECK_API_KEY"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-alert-freeze-authority-enabled",
+      "name": "Alert on Freeze Authority Enabled",
+      "description": "Warn when token has freeze authority enabled with low safety score",
+      "enabled": true,
+      "tags": [
+        "high",
+        "rugcheck",
+        "freeze"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "rugcheck:has_freeze_authority",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "rugcheck:risk_score",
+              "operator": "greater_than",
+              "value": 50
+            }
+          ]
+        },
+        "message": "⚠️ WARNING: Token has freeze authority - verify project trustworthiness"
+      },
+      "metadata": {
+        "severity": "high",
+        "weight": 35,
+        "requires_api_keys": [
+          "RUGCHECK_API_KEY"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-alert-mint-authority-active",
+      "name": "Alert on Active Mint Authority",
+      "description": "Warn when token has active mint authority (infinite supply risk)",
+      "enabled": true,
+      "tags": [
+        "high",
+        "rugcheck",
+        "mint"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "rugcheck:has_mint_authority",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "rugcheck:risk_score",
+              "operator": "greater_than",
+              "value": 40
+            }
+          ]
+        },
+        "message": "⚠️ WARNING: Token has active mint authority - supply can be inflated"
+      },
+      "metadata": {
+        "severity": "high",
+        "weight": 30,
+        "requires_api_keys": [
+          "RUGCHECK_API_KEY"
+        ]
+      }
+    }
+  ],
+  "deprecated_rule_ids": [],
+  "requires_api_keys": [
+    "RUGCHECK_API_KEY"
+  ]
+}
