@@ -32,6 +32,7 @@ jobs:
       - name: Build Pages site
         run: |
           mkdir -p _site/community _site/integration-examples
+          cp pages/index.html _site/index.html
           cp community/*.json _site/community/
           cp integration-examples/*.json _site/integration-examples/ || true
           echo "parapet-rules.securecheck.io" > _site/CNAME

@@ -22,8 +22,10 @@ There is **no** single “download everything” URL on purpose: you choose whic
 
 **Hosted copies**
 
-- Pages: `https://parapet-rules.securecheck.io/community/<filename>`
+- Pages: `https://parapet-rules.securecheck.io/` (landing page + links) and `https://parapet-rules.securecheck.io/community/<filename>` for each feed
 - Raw GitHub: `https://raw.githubusercontent.com/securecheckio/parapet-rules/main/community/<filename>`
+
+The static site root is built from `pages/index.html` in this repo (copied in the Pages workflow).
 
 Full Parapet options (timing, multiple sources, etc.): [Rule Feeds documentation](https://github.com/securecheckio/parapet/blob/main/docs/RULE_FEEDS.md).
 
