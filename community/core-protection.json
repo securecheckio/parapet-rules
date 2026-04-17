@@ -27,8 +27,7 @@
       },
       "metadata": {
         "attack_type": "unlimited_approval",
-        "severity": "critical",
-        "false_positive_rate": 0.001
+        "severity": "critical"
       }
     },
     {

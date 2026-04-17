@@ -27,7 +27,6 @@
       },
       "metadata": {
         "severity": "critical",
-        "false_positive_rate": 0.01,
         "weight": 100,
         "requires_api_keys": [
           "JUPITER_API_KEY"
@@ -56,7 +55,6 @@
       },
       "metadata": {
         "severity": "critical",
-        "false_positive_rate": 0.02,
         "weight": 100,
         "requires_api_keys": [
           "JUPITER_API_KEY"

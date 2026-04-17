@@ -28,7 +28,6 @@
       "metadata": {
         "severity": "critical",
         "weight": 100,
-        "false_positive_rate": 0.001,
         "requires_api_keys": [
           "RUGCHECK_API_KEY"
         ]

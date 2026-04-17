@@ -28,7 +28,6 @@
       },
       "metadata": {
         "severity": "critical",
-        "false_positive_rate": 0.001,
         "weight": 40
       }
     },
