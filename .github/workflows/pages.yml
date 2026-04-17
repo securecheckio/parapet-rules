@@ -34,7 +34,7 @@ jobs:
           mkdir -p _site/community _site/integration-examples
           cp community/*.json _site/community/
           cp integration-examples/*.json _site/integration-examples/ || true
-          echo "rules.parapet.security" > _site/CNAME
+          echo "parapet-rules.securecheck.io" > _site/CNAME
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

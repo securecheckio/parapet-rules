@@ -22,7 +22,7 @@ There is **no** single “download everything” URL on purpose: you choose whic
 
 **Hosted copies**
 
-- Pages: `https://rules.parapet.security/community/<filename>`
+- Pages: `https://parapet-rules.securecheck.io/community/<filename>`
 - Raw GitHub: `https://raw.githubusercontent.com/securecheckio/parapet-rules/main/community/<filename>`
 
 Full Parapet options (timing, multiple sources, etc.): [Rule Feeds documentation](https://github.com/securecheckio/parapet/blob/main/docs/RULE_FEEDS.md).
@@ -37,7 +37,7 @@ enabled = true
 poll_interval = 3600
 
 [[rule_feeds.sources]]
-url = "https://rules.parapet.security/community/core-protection.json"
+url = "https://parapet-rules.securecheck.io/community/core-protection.json"
 name = "parapet-community-core"
 priority = 5
 min_interval = 300
