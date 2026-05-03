@@ -1,0 +1,327 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: SolPhish Detection",
+  "description": "Detection rules based on SolPhishHunter research (arxiv:2505.04094) - identifies STMT, AAT, and ISA phishing attacks",
+  "published_at": "2026-04-28T16:13:00Z",
+  "source": "parapet-community",
+  "reference": "https://arxiv.org/abs/2505.04094",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-solphish-stmt-wallet-drain",
+      "name": "Block STMT: Multiple Token Wallet Drain",
+      "description": "Detects Single Transaction with Multiple Transfers (STMT) - drains multiple token types in one transaction. Caused $211K in losses in 2024 research.",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "solphish",
+        "stmt",
+        "wallet-drain"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "basic:instruction_count",
+              "operator": "greater_than",
+              "value": 2
+            },
+            {
+              "field": "token_instructions:transfer_count",
+              "operator": "greater_than",
+              "value": 2
+            },
+            {
+              "field": "token_instructions:accounts_fully_drained",
+              "operator": "greater_than_or_equal",
+              "value": 2
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: STMT Phishing Attack - Multiple tokens being drained in single transaction (SolPhishHunter pattern)"
+      },
+      "metadata": {
+        "attack_type": "stmt_wallet_drain",
+        "severity": "critical",
+        "weight": 90,
+        "research_reference": "arxiv:2505.04094",
+        "attack_timeline": "2024-01 to 2024-06 (peak period)",
+        "financial_impact": "$211,894 in detected losses"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-solphish-aat-wallet-authority",
+      "name": "Block AAT: Wallet Authority Transfer (Assign)",
+      "description": "Detects Account Authority Transfer via Assign instruction. AAT attacks caused 73.85% of total SolPhish losses ($812K).",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "solphish",
+        "aat",
+        "authority-transfer",
+        "assign"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "system:has_assign_instruction",
+          "operator": "equals",
+          "value": true
+        },
+        "message": "🚨 BLOCKED: AAT Phishing Attack - Wallet authority transfer detected via Assign instruction (SolPhishHunter pattern)"
+      },
+      "metadata": {
+        "attack_type": "aat_wallet_authority",
+        "severity": "critical",
+        "weight": 95,
+        "research_reference": "arxiv:2505.04094",
+        "financial_impact": "$812,220 in detected losses (highest impact type)",
+        "note": "AAT attacks average $374 per transaction vs $87 for STMT"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-solphish-aat-token-authority",
+      "name": "Block AAT: Token Account Authority Transfer",
+      "description": "Detects Account Authority Transfer via SetAuthority with account owner type. Often combined with Assign in same transaction.",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "solphish",
+        "aat",
+        "authority-transfer",
+        "setauthority"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "all": [
+            {
+              "field": "token_instructions:has_setauthority",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "token_instructions:setauthority_type",
+              "operator": "contains",
+              "value": "account_owner"
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: AAT Phishing Attack - Token account ownership transfer detected (SolPhishHunter pattern)"
+      },
+      "metadata": {
+        "attack_type": "aat_token_authority",
+        "severity": "critical",
+        "weight": 95,
+        "research_reference": "arxiv:2505.04094",
+        "note": "1,391 detected transactions involved both wallet AND token authority transfer"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-solphish-isa-system-impersonation-suffix",
+      "name": "Alert ISA: System Account Impersonation (Suffix)",
+      "description": "Detects Impersonation of System Accounts using vanity addresses ending in '11111' or '1111'. Caused $75K in losses. NOTE: Currently disabled pending regex support in Parapet.",
+      "enabled": false,
+      "tags": [
+        "high",
+        "solphish",
+        "isa",
+        "vanity-address",
+        "impersonation",
+        "requires-regex"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "basic:destination_address",
+              "operator": "contains",
+              "value": "11111"
+            },
+            {
+              "field": "basic:destination_address",
+              "operator": "not_equals",
+              "value": "11111111111111111111111111111111"
+            },
+            {
+              "any": [
+                {
+                  "field": "token_instructions:accounts_fully_drained",
+                  "operator": "greater_than",
+                  "value": 0
+                },
+                {
+                  "field": "basic:sol_balance_decreased",
+                  "operator": "equals",
+                  "value": true
+                }
+              ]
+            }
+          ]
+        },
+        "message": "⚠️ ALERT: ISA Phishing Suspected - Transfer to address with 11111 pattern"
+      },
+      "metadata": {
+        "attack_type": "isa_system_impersonation",
+        "severity": "high",
+        "weight": 70,
+        "research_reference": "arxiv:2505.04094",
+        "financial_impact": "$75,702 in detected losses",
+        "note": "ISA was the earliest phishing type (peaked Jan-June 2024). Regex pattern needed: .*11111$ or .*1111$"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-solphish-isa-compute-impersonation",
+      "name": "Alert ISA: ComputeBudget Impersonation",
+      "description": "Detects vanity addresses starting with 'Compu' to impersonate ComputeBudget program. NOTE: Currently disabled pending regex support in Parapet.",
+      "enabled": false,
+      "tags": [
+        "high",
+        "solphish",
+        "isa",
+        "vanity-address",
+        "impersonation",
+        "requires-regex"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "basic:destination_address",
+              "operator": "contains",
+              "value": "Compu"
+            },
+            {
+              "field": "basic:destination_address",
+              "operator": "not_equals",
+              "value": "ComputeBudget111111111111111111111111111111"
+            },
+            {
+              "any": [
+                {
+                  "field": "token_instructions:accounts_fully_drained",
+                  "operator": "greater_than",
+                  "value": 0
+                },
+                {
+                  "field": "basic:sol_balance_decreased",
+                  "operator": "equals",
+                  "value": true
+                }
+              ]
+            }
+          ]
+        },
+        "message": "⚠️ ALERT: ISA Phishing Suspected - Transfer to address with Compu prefix"
+      },
+      "metadata": {
+        "attack_type": "isa_compute_impersonation",
+        "severity": "high",
+        "weight": 70,
+        "research_reference": "arxiv:2505.04094",
+        "known_phishing_addresses": [
+          "CompuV3LmCTW7AGGnM6YBftCJkKP3ZKkK1fCAY8L7eM1"
+        ],
+        "note": "Regex pattern needed: ^Compu.*"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-solphish-durable-nonce-stmt",
+      "name": "High Alert: STMT with Durable Nonce",
+      "description": "Detects delayed execution phishing using advanceNonce instruction. Attackers deploy offline transactions that execute later to avoid detection.",
+      "enabled": true,
+      "tags": [
+        "high",
+        "solphish",
+        "stmt",
+        "durable-nonce",
+        "delayed-execution"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "system:has_advance_nonce",
+              "operator": "equals",
+              "value": true
+            },
+            {
+              "field": "token_instructions:transfer_count",
+              "operator": "greater_than",
+              "value": 2
+            }
+          ]
+        },
+        "message": "⚠️ HIGH ALERT: STMT with Durable Nonce - Delayed execution phishing pattern (14 cases detected in research)"
+      },
+      "metadata": {
+        "attack_type": "stmt_durable_nonce",
+        "severity": "high",
+        "weight": 75,
+        "research_reference": "arxiv:2505.04094 Section IV-B3(i)",
+        "note": "Allows attackers to deploy transactions that don't execute immediately"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-solphish-high-value-token-drain",
+      "name": "Alert: High-Value Token Drain",
+      "description": "Heightened scrutiny for transactions draining top-targeted tokens: USDC (332 attacks), Jupiter, Bonk, WIF, USDT in research data.",
+      "enabled": true,
+      "tags": [
+        "medium",
+        "solphish",
+        "high-value",
+        "stablecoin"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "all": [
+            {
+              "field": "token_instructions:accounts_fully_drained",
+              "operator": "greater_than",
+              "value": 0
+            },
+            {
+              "any": [
+                {
+                  "field": "token_instructions:affected_token_mints",
+                  "operator": "contains",
+                  "value": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                },
+                {
+                  "field": "token_instructions:affected_token_mints",
+                  "operator": "contains",
+                  "value": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+                },
+                {
+                  "field": "token_instructions:affected_token_mints",
+                  "operator": "contains",
+                  "value": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
+                }
+              ]
+            }
+          ]
+        },
+        "message": "⚠️ ALERT: High-value token drain detected - USDC/USDT/JUP frequently targeted by phishers"
+      },
+      "metadata": {
+        "severity": "medium",
+        "weight": 50,
+        "research_reference": "arxiv:2505.04094 Table VII",
+        "note": "Stablecoins account for 63% of illicit transactions (Chainalysis 2025)"
+      }
+    }
+  ],
+  "deprecated_rule_ids": []
+}

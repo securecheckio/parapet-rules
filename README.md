@@ -18,6 +18,8 @@ Ready-to-use **JSON rule feeds** for [Parapet](https://github.com/securecheckio/
 | `ai-agent-protection.json`    | AI agents / flowstate-style patterns.            |
 | `advanced-patterns.json`      | CPI depth + instruction-padding patterns.       |
 | `trading-bot-alerts.json`     | Alert-first patterns for trading-style traffic. |
+| `solphish-detection.json`     | SolPhishHunter research patterns (STMT/AAT/ISA).|
+| `solphish-blocklist.json`     | 64 confirmed phishing accounts ($1.1M losses).  |
 
 
 There is **no** single “download everything” URL on purpose: you choose which categories to load. List each one as its own `[[rule_feeds.sources]]` entry.
@@ -74,6 +76,25 @@ Example JSON for **your** hosted override feeds. Not published as Parapet “com
 **Condition `field` values** (e.g. `token_instructions:…`) describe what to read from analyzers; they are not the same thing as rule `id`.
 
 Validate locally: `python3 scripts/validate_community_feeds.py`
+
+---
+
+## SolPhish Detection (Research-Based)
+
+The `solphish-detection.json` and `solphish-blocklist.json` feeds are based on academic research:
+
+**Source**: [SolPhishHunter: Towards Detecting and Understanding Phishing on Solana](https://arxiv.org/abs/2505.04094)  
+**Authors**: Ziwei Li, Zigui Jiang, et al. (Sun Yat-sen University + GoPlus Security)  
+**Published**: IEEE Transactions on Information Forensics and Security, 2026
+
+**Detection Coverage**:
+- **STMT** (Single Transaction with Multiple Transfers) - wallet draining attacks
+- **AAT** (Account Authority Transfer) - 73.85% of phishing losses  
+- **ISA** (Impersonation of System Accounts) - vanity address scams
+
+**Dataset**: 8,058 phishing transactions, 64 confirmed accounts, $1.1M in losses
+
+**Implementation Guide**: See `SOLPHISH_IMPLEMENTATION.md` in main repository for details on required analyzer fields and detection logic.
 
 ---
 

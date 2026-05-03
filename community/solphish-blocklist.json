@@ -1,0 +1,310 @@
+{
+  "version": "1.0",
+  "name": "Parapet Community: SolPhish Blocklist",
+  "description": "Confirmed phishing accounts from SolPhishHunter research (arxiv:2505.04094). 64 accounts responsible for 8,058 phishing transactions and $1.1M in losses.",
+  "published_at": "2026-04-28T16:13:00Z",
+  "source": "parapet-community",
+  "reference": "https://arxiv.org/abs/2505.04094",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-top-aat-phisher-1",
+      "name": "Block: BNRT...5Rep (AAT Gang Leader)",
+      "description": "Phishing program account with 931 AAT attacks causing $449,935 in losses. Most damaging single account.",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "blocklist",
+        "aat",
+        "gang-leader"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:program_id",
+              "operator": "equals",
+              "value": "BNRThTYg9x49JYNkbDUYERb3X7JV2GYcEpFLAUHX5Rep"
+            },
+            {
+              "field": "basic:destination_address",
+              "operator": "equals",
+              "value": "BNRThTYg9x49JYNkbDUYERb3X7JV2GYcEpFLAUHX5Rep"
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: Known phishing program (SolPhishHunter: $450K losses, 931 attacks)"
+      },
+      "metadata": {
+        "attack_count": 931,
+        "financial_losses_usd": 449934.80,
+        "attack_type": "aat",
+        "research_reference": "arxiv:2505.04094 Table VIII"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-top-aat-phisher-2",
+      "name": "Block: 3Bit...7yQa (AAT Gang Member)",
+      "description": "647 AAT attacks causing $449,636 in losses. Part of Gang 1 (8-member group).",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "blocklist",
+        "aat",
+        "gang"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:destination_address",
+              "operator": "equals",
+              "value": "3Bitp9awjSEGE1UumthfF6iogTuTkFhaLBHj3xvK7yQa"
+            },
+            {
+              "field": "basic:source_address",
+              "operator": "equals",
+              "value": "3Bitp9awjSEGE1UumthfF6iogTuTkFhaLBHj3xvK7yQa"
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: Known phishing account (SolPhishHunter: $450K losses, Gang 1 member)"
+      },
+      "metadata": {
+        "attack_count": 647,
+        "financial_losses_usd": 449636.13,
+        "attack_type": "aat",
+        "gang_id": "gang_1",
+        "research_reference": "arxiv:2505.04094 Table VIII & X"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-top-stmt-phisher",
+      "name": "Block: Gck5...1VX4 (STMT Drainer)",
+      "description": "1,639 STMT wallet-draining attacks. Reported by multiple Twitter users for malicious activity.",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "blocklist",
+        "stmt",
+        "drainer"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:destination_address",
+              "operator": "equals",
+              "value": "Gck5PWhKL4Qn87bhFwpL19Y5gkAbFN93GXXsTzuJ1VX4"
+            },
+            {
+              "field": "basic:source_address",
+              "operator": "equals",
+              "value": "Gck5PWhKL4Qn87bhFwpL19Y5gkAbFN93GXXsTzuJ1VX4"
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: Known wallet drainer (SolPhishHunter: 1,639 attacks)"
+      },
+      "metadata": {
+        "attack_count": 1639,
+        "financial_losses_usd": 716.63,
+        "attack_type": "stmt",
+        "research_reference": "arxiv:2505.04094 Table VIII",
+        "social_reports": [
+          "https://x.com/GBENONCHI/status/1780186273929367980",
+          "https://x.com/SmokyHead_Art/status/1733896906810810667"
+        ]
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-top-isa-phisher",
+      "name": "Block: CaNC...1111 (ISA Gang 3 Leader)",
+      "description": "1,692 ISA attacks causing $43,547 in losses. Gang 3 leader (4-member ISA gang).",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "blocklist",
+        "isa",
+        "gang-leader"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:destination_address",
+              "operator": "equals",
+              "value": "CaNCU6LiZUKc7Su3avu5jDbdDXdKeAmv625c4M11111"
+            },
+            {
+              "field": "basic:source_address",
+              "operator": "equals",
+              "value": "CaNCU6LiZUKc7Su3avu5jDbdDXdKeAmv625c4M11111"
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: Known ISA phishing account (SolPhishHunter: $44K losses, Gang 3 leader)"
+      },
+      "metadata": {
+        "attack_count": 1692,
+        "financial_losses_usd": 43547.25,
+        "attack_type": "isa",
+        "gang_id": "gang_3",
+        "research_reference": "arxiv:2505.04094 Table VIII & X"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-isa-gang-3",
+      "name": "Block: ISA Gang 3 (All Members)",
+      "description": "Blocks all 4 members of Gang 3 - ISA phishing syndicate with 2,071 attacks and $466K losses. Centralized fund aggregation pattern.",
+      "enabled": true,
+      "tags": [
+        "critical",
+        "blocklist",
+        "isa",
+        "gang"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:destination_address",
+              "operator": "in",
+              "value": [
+                "Qcsb89L6QS74b56PpxvygajsXKx1CnBSqnQ5gq11111",
+                "np84cd63UoFj2pbR7QU226hKg8e5w6j2hN4poa11111",
+                "CaNCU6LiZUKc7Su3avu5jDbdDXdKeAmv625c4M11111",
+                "3M6DXwQva1H3oTSiYUJCjPSFqTYzQWm3rMiPpQjzhF6Z"
+              ]
+            },
+            {
+              "field": "basic:source_address",
+              "operator": "in",
+              "value": [
+                "Qcsb89L6QS74b56PpxvygajsXKx1CnBSqnQ5gq11111",
+                "np84cd63UoFj2pbR7QU226hKg8e5w6j2hN4poa11111",
+                "CaNCU6LiZUKc7Su3avu5jDbdDXdKeAmv625c4M11111",
+                "3M6DXwQva1H3oTSiYUJCjPSFqTYzQWm3rMiPpQjzhF6Z"
+              ]
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: ISA phishing gang member (Gang 3: 2,071 attacks, $466K losses)"
+      },
+      "metadata": {
+        "gang_id": "gang_3",
+        "gang_size": 4,
+        "total_attacks": 2071,
+        "financial_losses_usd": 466279.20,
+        "attack_type": "isa",
+        "topology": "star (inward radiating)",
+        "research_reference": "arxiv:2505.04094 Table X & Section V-D"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-isa-impersonators",
+      "name": "Block: ISA System Impersonators",
+      "description": "Blocks all 21 known ISA vanity addresses impersonating system accounts (ending in 11111 or starting with Compu).",
+      "enabled": true,
+      "tags": [
+        "high",
+        "blocklist",
+        "isa",
+        "impersonation"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:destination_address",
+              "operator": "in",
+              "value": [
+                "iBGtY2LBEmTiVrmPCgHRGdCPZJcDEmmkDxbLhV11111",
+                "gYs5v8LBaTNRFhU8rSSFeEqaCQPjmkT28naAN711111",
+                "CompuV3LmCTW7AGGnM6YBftCJkKP3ZKkK1fCAY8L7eM1",
+                "np84cd63UoFj2pbR7QU226hKg8e5w6j2hN4poa11111",
+                "CaNCU6LiZUKc7Su3avu5jDbdDXdKeAmv625c4M11111",
+                "Qcsb89L6QS74b56PpxvygajsXKx1CnBSqnQ5gq11111",
+                "TdnNjtovxBmRZmg76oHhTgpVfWQYa4CCfTUNxU11111",
+                "b8pyTBjatpNCVaKxRbPkqiujziAcvTXkcQeYDb11111",
+                "9LMa3PfmGCA61itb479zZVU9Pjqg8j1fXzP1Ex11111",
+                "eWxJCpJh1ac5gv3j7i6GM6FvhndkZP1j1bebNc11111",
+                "cMHG3ivVkVmkUcX6MMsWetEUeWcCw78QzSaqzW11111",
+                "Lm4Ng7FPwxGBVQAPYNbqijuUzcXiy9vaVWPAPE11111",
+                "ZJKJzZpiEXkK2CSGi6eJYGvZ6bp3kRXwPBsiWV11111",
+                "CompuMqjzwwtYH5kFbFgqFW92UJzNRSUXMBud1G4svh2",
+                "CompurwaRQEp7NAbdSnHhmu35gNm3HwGRdBtVSVFjcX5",
+                "wddBT1UoieJbHt3gHrtEWEyh41jDe4PfctgpGs11111",
+                "ComputHPT5daVapYegd9NEuqWfHdy9DAcG2Yiskc8uX8",
+                "CompuN1ccmbcd2wfDU8j8bkLG62AGgHAwMx4XRnGWKTM",
+                "RB8EsMj3dntJZtotspEfPisei5oQjTB4f4NWjx11111",
+                "S8dSx4oehDpy7CVexQ2HVMepdoxnZF6puEbdwH11111",
+                "De2bQHxEgbiQCp4T8E1vrNXy8x19tMs49yWtVu11111"
+              ]
+            }
+          ]
+        },
+        "message": "🚨 BLOCKED: Known ISA phishing address (system account impersonator)"
+      },
+      "metadata": {
+        "total_addresses": 21,
+        "attack_type": "isa",
+        "research_reference": "arxiv:2505.04094 Table V",
+        "note": "8 labeled + 13 discovered gang members"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-blocklist-solphish-money-laundering",
+      "name": "Alert: Known Money Laundering Accounts",
+      "description": "Tracks addresses used for laundering stolen funds via multiple STMT transfers.",
+      "enabled": true,
+      "tags": [
+        "high",
+        "blocklist",
+        "money-laundering"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "any": [
+            {
+              "field": "basic:destination_address",
+              "operator": "in",
+              "value": [
+                "GLqfgNJmVYBeT9TrEpvZPf7t79Jd8EFrsCti87RA3bUh",
+                "HbtSzZgPZJabqWgXV9t7S4n6RwkmFuUDze1tQYX22oAP"
+              ]
+            },
+            {
+              "field": "basic:source_address",
+              "operator": "in",
+              "value": [
+                "GLqfgNJmVYBeT9TrEpvZPf7t79Jd8EFrsCti87RA3bUh",
+                "HbtSzZgPZJabqWgXV9t7S4n6RwkmFuUDze1tQYX22oAP"
+              ]
+            }
+          ]
+        },
+        "message": "⚠️ ALERT: Known money laundering address (moves stolen funds to multiple destinations)"
+      },
+      "metadata": {
+        "attack_type": "money_laundering",
+        "research_reference": "arxiv:2505.04094 Section IV-B3(i)",
+        "note": "GLqf: 124 transfers to 16 addresses, HbtS: 89 transfers"
+      }
+    }
+  ],
+  "deprecated_rule_ids": []
+}
