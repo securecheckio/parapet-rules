@@ -10,7 +10,7 @@ Checks (aligned with parapet-core rule / feed types):
   operators still override a community rule by defining the same `id` in another feed URL
   with a lower `priority` in config).
 - rule.rule: action in {block, alert, pass}, non-empty message, conditions tree
-  (simple / compound / flowbit), optional flowbits block.
+  (simple / compound / flowstate), optional flowstate block.
 - Operators match ComparisonOperator; community rule ids must match
   ^community-[a-z][a-z0-9-]*$ (prefix marks feeds from this repo; Parapet does not add it).
 - Optional rule.metadata: if present must be a JSON object (any keys for authors/tools).
@@ -83,11 +83,11 @@ def validate_simple_condition(cond: dict, *, path: str) -> None:
 
 
 def validate_flowstate_condition(cond: dict, *, path: str) -> None:
-    allowed = {"flowstate", "flowbit", "within_seconds", "count_operator", "count_value"}
+    allowed = {"flowstate", "within_seconds", "count_operator", "count_value"}
     extra = set(cond) - allowed
     if extra:
         die(f"{path}: unexpected keys in flowstate condition: {sorted(extra)}")
-    fb = cond.get("flowstate") or cond.get("flowbit")
+    fb = cond.get("flowstate")
     if not isinstance(fb, str) or not fb.strip():
         die(f"{path}: flowstate condition needs non-empty string 'flowstate'")
     ws = cond.get("within_seconds")
@@ -107,7 +107,7 @@ def validate_condition(cond: Any, *, path: str, depth: int) -> None:
     if not isinstance(cond, dict):
         die(f"{path}: condition must be a JSON object")
 
-    is_flowstate = "flowstate" in cond or "flowbit" in cond
+    is_flowstate = "flowstate" in cond
     compound_keys = ("all", "any", "not")
     is_compound = any(k in cond for k in compound_keys)
     is_simple = "field" in cond and "operator" in cond
@@ -163,19 +163,19 @@ def validate_flowstate_actions(obj: dict, *, path: str) -> None:
     if isinstance(sc, str):
         sc_l = sc.lower()
         if sc_l not in ("perwallet", "global"):
-            die(f"{path}: flowbits.scope must be 'perwallet' or 'global', not {sc!r}")
+            die(f"{path}: flowstate.scope must be 'perwallet' or 'global', not {sc!r}")
     else:
-        die(f"{path}: flowbits.scope must be a string")
+        die(f"{path}: flowstate.scope must be a string")
     for key in ("set", "unset", "increment"):
         if key not in obj:
             continue
         v = obj[key]
         if not isinstance(v, list) or not all(isinstance(x, str) for x in v):
-            die(f"{path}: flowbits.{key} must be an array of strings")
+            die(f"{path}: flowstate.{key} must be an array of strings")
     if "ttl_seconds" in obj and obj["ttl_seconds"] is not None:
         ttl = obj["ttl_seconds"]
         if not isinstance(ttl, int) or ttl < 0:
-            die(f"{path}: flowbits.ttl_seconds must be a non-negative int or null")
+            die(f"{path}: flowstate.ttl_seconds must be a non-negative int or null")
 
 
 def validate_rule(rule: dict, *, path: str) -> None:
@@ -217,7 +217,7 @@ def validate_rule(rule: dict, *, path: str) -> None:
     r = rule["rule"]
     if not isinstance(r, dict):
         die(f"{path}: rule.rule must be object: id={rid!r}")
-    rule_allowed = {"action", "conditions", "message", "flowstate", "flowbits"}
+    rule_allowed = {"action", "conditions", "message", "flowstate"}
     extra_r = set(r) - rule_allowed
     if extra_r:
         die(f"{path}: unexpected keys in rule.rule: {sorted(extra_r)}: id={rid!r}")
@@ -237,8 +237,7 @@ def validate_rule(rule: dict, *, path: str) -> None:
 
     validate_condition(r["conditions"], path=f"{path}.conditions", depth=0)
 
-    # Support both flowstate (new) and flowbits (legacy) for backward compatibility
-    flowstate_block = r.get("flowstate") or r.get("flowbits")
+    flowstate_block = r.get("flowstate")
     if flowstate_block is not None:
         if not isinstance(flowstate_block, dict):
             die(f"{path}: rule.rule.flowstate must be an object or omitted: id={rid!r}")
