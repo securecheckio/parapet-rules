@@ -9,7 +9,7 @@
       "version": "1.0",
       "id": "community-demo-block-large-sol",
       "name": "Demo: Block Large SOL Transfers",
-      "description": "Blocks SOL transfers greater than 1 SOL (safe for testing - adjust threshold as needed)",
+      "description": "Blocks SOL transfers greater than 0.1 SOL (safe for testing - adjust threshold as needed)",
       "enabled": true,
       "tags": [
         "demo",
@@ -21,9 +21,9 @@
         "conditions": {
           "field": "system:max_sol_transfer",
           "operator": "greater_than",
-          "value": 1000000000
+          "value": 100000000
         },
-        "message": "🛑 DEMO BLOCK: Transaction transfers more than 1 SOL"
+        "message": "🛑 DEMO BLOCK: Transaction transfers more than 0.1 SOL"
       },
       "metadata": {
         "demo": true,
