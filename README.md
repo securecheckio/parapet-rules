@@ -4,6 +4,8 @@ Ready-to-use **JSON rule feeds** for [Parapet](https://github.com/securecheckio/
 
 **If you only want to turn protection on:** add the feed URLs to Parapet’s `config.toml` (see [Example](#example-configtoml) below). You do **not** need to read the rest of this file.
 
+**🎯 Quick Demo** (2 minutes): See [JUDGE_QUICKSTART.md](./JUDGE_QUICKSTART.md) for hands-on testing
+
 ---
 
 ## Pick a feed (one URL per category)
@@ -11,6 +13,7 @@ Ready-to-use **JSON rule feeds** for [Parapet](https://github.com/securecheckio/
 
 | URL path (under `community/`) | When to use it                                  |
 | ----------------------------- | ----------------------------------------------- |
+| `demo-test.json`              | **Safe testing/demos** - blocks >1 SOL transfers |
 | `core-protection.json`        | No third-party API keys; pattern rules only.    |
 | `helius-protection.json`      | You have a Helius API key.                      |
 | `jupiter-protection.json`     | You have a Jupiter API key.                     |
