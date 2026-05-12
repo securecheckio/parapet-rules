@@ -1,0 +1,85 @@
+{
+  "version": "1.0",
+  "name": "Parapet Demo: Easy Test Rules",
+  "description": "Safe demo rules that trigger on common, harmless transactions for testing Parapet protection.",
+  "published_at": "2026-05-12T06:45:00Z",
+  "source": "parapet-community",
+  "rules": [
+    {
+      "version": "1.0",
+      "id": "community-demo-block-large-sol",
+      "name": "Demo: Block Large SOL Transfers",
+      "description": "Blocks SOL transfers greater than 1 SOL (safe for testing - adjust threshold as needed)",
+      "enabled": true,
+      "tags": [
+        "demo",
+        "test",
+        "sol-transfer"
+      ],
+      "rule": {
+        "action": "block",
+        "conditions": {
+          "field": "system:max_sol_transfer",
+          "operator": "greater_than",
+          "value": 1000000000
+        },
+        "message": "🛑 DEMO BLOCK: Transaction transfers more than 1 SOL"
+      },
+      "metadata": {
+        "demo": true,
+        "severity": "info"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-demo-alert-any-sol",
+      "name": "Demo: Alert on Any SOL Transfer",
+      "description": "Alerts (doesn't block) on any SOL transfer to show detection without stopping transaction",
+      "enabled": true,
+      "tags": [
+        "demo",
+        "test",
+        "alert"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "field": "system:max_sol_transfer",
+          "operator": "greater_than",
+          "value": 0
+        },
+        "message": "⚠️ DEMO ALERT: SOL transfer detected - Parapet is analyzing your transaction"
+      },
+      "metadata": {
+        "demo": true,
+        "severity": "info"
+      }
+    },
+    {
+      "version": "1.0",
+      "id": "community-demo-alert-multiple-instructions",
+      "name": "Demo: Alert on Complex Transactions",
+      "description": "Alerts when transaction has more than 3 instructions (common in scams)",
+      "enabled": false,
+      "tags": [
+        "demo",
+        "test",
+        "complexity"
+      ],
+      "rule": {
+        "action": "alert",
+        "conditions": {
+          "field": "basic:instruction_count",
+          "operator": "greater_than",
+          "value": 3
+        },
+        "message": "⚠️ DEMO ALERT: Complex transaction detected (>3 instructions)"
+      },
+      "metadata": {
+        "demo": true,
+        "severity": "info"
+      }
+    }
+  ],
+  "deprecated_rule_ids": []
+}
